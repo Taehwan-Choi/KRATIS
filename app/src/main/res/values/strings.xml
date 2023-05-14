@@ -1,0 +1,52 @@
+<resources>
+    <string name="app_name">마사회 조교정보</string>
+    <string name="tracking_button">트래킹 시작</string>
+    <string name="record_button">기록 확인</string>
+    <string name="user_button">사용자 등록</string>
+    <string name="help_button">도움말</string>
+    <string name="help_text_screen">
+"""
+1. 본 기록은 정확하지 않으니 참고용으로만 사용 하시기 바랍니다.
+2. GPS 시스템 특성상 정확한 위치 추정은 되지 않습니다.
+3. 사용자 등록을 하지 않은 채 사용하면 미등록(전화번호 뒷 4자리)로 표출 됩니다.
+4. 기본적으로 1초에 한번 위치 측정이 이루어 지지만, GPS 신호가 약한 실내에서는 5초마다 위치 측정이 이루어집니다.
+
+문제상황 발생시 구글 플레이스토어에서 해당 앱을 최신버전으로 업데이트 해보시기 바랍니다.
+문의사항 및 개선사항 제안이 있을 경우아래 번호로 연락 주시기 바랍니다.
+064-780-0152
+
+Copyright 한국마사회 최태환
+"""
+    </string>
+    <string name="exit_button">종 료</string>
+    <string name="title_activity_map_tracking">MapTrackingActivity</string>
+    <string name="seoul_race_text">서울 경마장</string>
+    <string name="busan_race_text">부경 경마장</string>
+    <string name="jeju_farm_text">제주 목장</string>
+    <string name="jangsu_farm_text">장수 목장</string>
+    <string name="unregistered_text">등록해지</string>
+    <string name="horse_check_button">입사 마필 확인</string>
+    <string name="Unregistered_user">미등록 사용자</string>
+    <string name="doNotDisturbTextMessage">
+"""방해금지 모드를
+켜 주세요"""</string>
+    <string name="gallop">0:00</string>
+    <string name="canter">0:00</string>
+    <string name="trot">0:00</string>
+    <string name="walk">0:00</string>
+    <string name="FinishToggleButtonText">종료</string>
+    <string name="startToggleButtonText">시작</string>
+    <string name="nonTrainingArea">비 조교 구역</string>
+    <string name="UphillToggleButton">언덕주로</string>
+    <string name="noRecordAlert">총 조교시간이 60초가 되지 않아 조교 기록이 저장되지 않습니다. 기록을 종료 하시겠습니까?</string>
+    <string name="backPressedAutoSave">조교 기록이 진행 중입니다. 현재 기록을 저장하고 종료 하시겠습니까?</string>
+    <string name="how_to_use">사용법</string>
+    <string name="local_record">로컬 기록 확인</string>
+    <string name="training_reference">조교 강도 기준</string>
+    <string name="problem_solving">문제 해결</string>
+    <string name="bottomText">마필 조교 구역이 아닙니다</string>
+    <string name="zero000">0:00</string>
+    <string name="DonotDisturbAlarm">안드로이드 방해 금지 모드를 활성화 해 주시기 바랍니다</string>
+    <string name="logCheck">로그 파일 확인</string>
+
+</resources>

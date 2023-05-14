@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TrainerDivActivity">
+
+
+    <Button
+        android:id="@+id/seoul_race"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textSize="30sp"
+        android:layout_margin="10dp"
+        android:text="@string/seoul_race_text"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/busan_race"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/busan_race"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textSize="30sp"
+        android:layout_margin="10dp"
+        android:text="@string/busan_race_text"
+        app:layout_constraintTop_toBottomOf="@id/seoul_race"
+        app:layout_constraintBottom_toTopOf="@id/jeju_farm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/jeju_farm"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textSize="30sp"
+        android:layout_margin="10dp"
+        android:text="@string/jeju_farm_text"
+        app:layout_constraintTop_toBottomOf="@id/busan_race"
+        app:layout_constraintBottom_toTopOf="@id/jangsu_farm"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/jangsu_farm"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textSize="30sp"
+        android:layout_margin="10dp"
+        android:text="@string/jangsu_farm_text"
+        app:layout_constraintTop_toBottomOf="@id/jeju_farm"
+        app:layout_constraintBottom_toTopOf="@id/unregistered"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <Button
+        android:id="@+id/unregistered"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:textSize="30sp"
+        android:layout_margin="10dp"
+        android:text="@string/unregistered_text"
+        app:layout_constraintTop_toBottomOf="@id/jangsu_farm"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
