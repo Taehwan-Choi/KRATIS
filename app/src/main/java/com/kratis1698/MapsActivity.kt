@@ -1,7 +1,6 @@
 package com.kratis1698
 
 import android.Manifest
-import android.app.AlertDialog
 import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
@@ -9,11 +8,13 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Looper
+//import com.kratis1698.R
 import android.view.Gravity
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -2823,3 +2824,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
