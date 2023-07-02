@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UphillMapsActivity">
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+
+    <LinearLayout
+        android:id="@+id/topLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:gravity="end">
+
+        <TextView
+            android:id="@+id/HorseNameLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text=""
+            android:textSize="20sp"
+            android:layout_weight="3"/>
+
+        <ToggleButton
+            android:id="@+id/button_toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textOff="Off"
+            android:textOn="On"
+            android:textSize="20sp"
+            android:textColor="#FFFFFF"
+            android:checked="false"
+            />
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/bottomLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true">
+
+        <TextView
+            android:id="@+id/bottomTextLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/bottomText"
+            android:textSize="20sp"
+            android:background="@color/grey"
+            android:layout_weight="1"/>
+
+    </LinearLayout>
+
+
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/topLayout"
+        android:layout_above="@id/bottomLayout"
+        tools:context=".MapsActivity" />
+
+
+
+    <TextView
+        android:id="@+id/MapOverlayTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topLayout"
+        android:textColor="@color/grey"
+        android:textSize="20sp"
+        android:background="#00000000"
+        tools:context=".MapsActivity"
+        />
+
+
+    <ScrollView
+        android:id="@+id/MapOverlayScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottomLayout"
+        android:background="#00000000">
+
+
+        <LinearLayout
+            android:id="@+id/MapOverlayScrollLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp">
+            <!--            android:layout_height="wrap_content"-->
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+</RelativeLayout>
+

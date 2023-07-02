@@ -12,13 +12,13 @@ class HelpActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_help)
 
-        val howToUseButton = findViewById<Button>(R.id.how_to_use)
+        val howToUseButton = findViewById<Button>(R.id.tracking_button)
         howToUseButton.setOnClickListener {
 //            val intent = Intent(this, HowToUseActivity::class.java)
 //            startActivity(intent)
         }
 
-        val localRecordButton = findViewById<Button>(R.id.local_record)
+        val localRecordButton = findViewById<Button>(R.id.record_button)
         localRecordButton.setOnClickListener {
             val intent = Intent(this, LocalRecordActivity::class.java)
             startActivity(intent)
@@ -31,13 +31,13 @@ class HelpActivity : AppCompatActivity() {
         }
 
 
-        val trainingReferenceButton = findViewById<Button>(R.id.training_reference)
+        val trainingReferenceButton = findViewById<Button>(R.id.horse_check_button)
         trainingReferenceButton.setOnClickListener {
             val intent = Intent(this, TrainingReferenceActivity::class.java)
             startActivity(intent)
         }
 
-        val problemSolvingButton = findViewById<Button>(R.id.problem_solving)
+        val problemSolvingButton = findViewById<Button>(R.id.user_button)
         problemSolvingButton.setOnClickListener {
 //            val intent = Intent(this, ProblemSolvingActivity::class.java)
 //            startActivity(intent)

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">마사회 조교정보</string>
-    <string name="tracking_button">트래킹 시작</string>
+    <string name="tracking_button">마필 조교 트래킹</string>
     <string name="record_button">기록 확인</string>
     <string name="user_button">사용자 등록</string>
     <string name="help_button">도움말</string>
@@ -48,5 +48,6 @@ Copyright 한국마사회 최태환
     <string name="zero000">0:00</string>
     <string name="DonotDisturbAlarm">안드로이드 방해 금지 모드를 활성화 해 주시기 바랍니다</string>
     <string name="logCheck">로그 파일 확인</string>
+    <string name="uphill_tracking_button">실내언덕주로 트래킹</string>
 
 </resources>

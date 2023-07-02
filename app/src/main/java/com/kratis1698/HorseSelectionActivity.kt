@@ -18,12 +18,10 @@ class HorseSelectionActivity : AppCompatActivity() {
         )
 
         val tempUserPk = sharedPref.getString("User_PK", null)
-
         val buttonLayout = findViewById<LinearLayout>(R.id.button_layout)
-
         val inputStream = resources.openRawResource(R.raw.kra_horses)
-
         val horses = mutableListOf<Triple<String, String, String>>()
+        val trackingType = intent.getStringExtra("Tracking_Type")
 
 //        val horseListUpdateTimeText = findViewById<TextView>(R.id.horseListUpdateTime)
 //
@@ -62,14 +60,26 @@ class HorseSelectionActivity : AppCompatActivity() {
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
 
 
+
             button.setOnClickListener {
 
-                val intent = Intent(this, MapsActivity::class.java)
-                intent.putExtra("Horse_PK", horse.first)
-                intent.putExtra("Horse_Name",  horse.second)
-                intent.putExtra("Horse_BY", horse.third)
+                when (trackingType) {
+                    "Training" -> {
+                        val intent = Intent(this, MapsActivity::class.java)
+                        intent.putExtra("Horse_PK", horse.first)
+                        intent.putExtra("Horse_Name",  horse.second)
+                        intent.putExtra("Horse_BY", horse.third)
+                        startActivity(intent)
+                    }
+                    "Uphill_Training" -> {
+                        val intent = Intent(this, UphillMapsActivity::class.java)
+                        intent.putExtra("Horse_PK", horse.first)
+                        intent.putExtra("Horse_Name",  horse.second)
+                        intent.putExtra("Horse_BY", horse.third)
+                        startActivity(intent)
+                    }
+                }
 
-                startActivity(intent)
 
             }
             buttonLayout.addView(button)

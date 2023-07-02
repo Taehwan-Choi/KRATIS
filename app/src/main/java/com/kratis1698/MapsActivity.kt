@@ -1,23 +1,33 @@
 package com.kratis1698
 
+//import com.kratis1698.R
 import android.Manifest
 import android.app.NotificationManager
+import android.content.ContentValues
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Environment
 import android.os.Looper
-//import com.kratis1698.R
+import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,6 +35,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.PolyUtil
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileWriter
 import java.text.SimpleDateFormat
@@ -78,6 +91,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var bottomTextLabel: TextView
 
     private lateinit var mapOverlayScrollLayout: LinearLayout
+
 
 
     companion object {
@@ -179,6 +193,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
+
+
 
         // 화면이 꺼지지 않고 계속 켜져있도록 하는 코드
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -584,7 +600,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         //        충분한 위치 정보 스택이 쌓였다고 판단되는 5초 후 부터 본격적인 정보 갱신 시작
         timer1sec.schedule(timerTask1Sec, 5000L, 1000L)
-        timer10sec.schedule(timerTask10Sec, 0L, 10000L)
+        
+//        방해금지 모드 미활성화시 해당 액티비티가 작동하지 않도록 함
+//        timer10sec.schedule(timerTask10Sec, 0L, 10000L)
 
 
         polyline = map.addPolyline(PolylineOptions().apply {
@@ -653,6 +671,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
                                 locationInfoFullList.add(currentlocationInfo)
+
+                                Log.d("MapsActivity", "currentlocationInfo: $currentlocationInfo")
+
+
+                                
+//                                매 순간 좌표 기록 남기도록 임시 수정한 부분
+//
+//
+
+//                                mapOverlayInfoText(
+//                                    String.format(
+//                                        "시간 : %s  " +
+//                                                "위도 : %s  " +
+//                                                "경도 : %s  " +
+//                                                "속도 : %s km/h " +
+//                                                "방향 : %s",
+//                                        SimpleDateFormat(
+//                                            "HH:mm:ss",
+//                                            Locale.getDefault()
+//                                        ).format(Date(currentlocationInfo.time)),
+//                                        currentlocationInfo.latitude,
+//                                        currentlocationInfo.longitude,
+//                                        currentlocationInfo.speed,
+//                                        currentlocationInfo.bearing
+//
+//                                    )
+//                                )
+
+
+
+
+
 
 
                                 val currentLatLng =
@@ -1248,7 +1298,120 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+
+    private fun takeScreenshot() {
+
+        val scrollView = findViewById<ScrollView>(R.id.MapOverlayScrollView)
+        scrollView.visibility = View.GONE
+
+        val mapOverlayLayout = findViewById<LinearLayout>(R.id.MapOverlayScrollLayout)
+        mapOverlayLayout.visibility = View.GONE
+
+
+
+        map.moveCamera(
+            CameraUpdateFactory.newLatLngZoom(
+                LatLng(33.41304652108367,126.67181611061095), 16.129726f
+            )
+        )
+
+
+
+
+
+        val rootView = findViewById<ViewGroup>(R.id.ScreenView)
+
+        val bitmap = Bitmap.createBitmap(rootView.width, rootView.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val backgroundDrawable = rootView.background
+        backgroundDrawable?.draw(canvas)
+        rootView.draw(canvas)
+
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as? SupportMapFragment
+        mapFragment?.getMapAsync { googleMap ->
+            googleMap.snapshot { mapBitmap ->
+                // Combine the bitmaps
+                val combinedBitmap = Bitmap.createBitmap(bitmap.width, bitmap.height, bitmap.config)
+                val combinedCanvas = Canvas(combinedBitmap)
+                combinedCanvas.drawBitmap(mapBitmap!!, 0f, 0f, null)
+                combinedCanvas.drawBitmap(bitmap, 0f, 0f, null)
+
+                // Save the combined bitmap
+                val displayName = "screenshot_${System.currentTimeMillis()}.jpg"
+                val contentResolver = applicationContext.contentResolver
+                val imageCollection =
+                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+                val imageDetails = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    put(
+                        MediaStore.Images.Media.RELATIVE_PATH,
+                        Environment.DIRECTORY_PICTURES + "/training"
+                    )
+                }
+
+                lifecycleScope.launch {
+                    withContext(Dispatchers.IO) {
+                        val imageUri = contentResolver.insert(imageCollection, imageDetails)
+
+                        imageUri?.let {
+                            contentResolver.openOutputStream(it)?.use { outputStream ->
+                                combinedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+
+//    private fun takeScreenshot() {
+//
+//        map.moveCamera(
+//            CameraUpdateFactory.newLatLngZoom(
+//                LatLng(33.41304652108367,126.67181611061095), 16.129726f
+//            )
+//        )
+//
+//
+//        map.snapshot { bitmap ->
+//            val displayName = "screenshot_${System.currentTimeMillis()}.jpg"
+//            val contentResolver = applicationContext.contentResolver
+//            val imageCollection =
+//                MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+//
+//            val imageDetails = ContentValues().apply {
+//                put(MediaStore.Images.Media.DISPLAY_NAME, displayName)
+//                put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+//                put(
+//                    MediaStore.Images.Media.RELATIVE_PATH,
+//                    Environment.DIRECTORY_PICTURES + "/training"
+//                )
+//            }
+//
+//            lifecycleScope.launch {
+//                withContext(Dispatchers.IO) {
+//                    val imageUri = contentResolver.insert(imageCollection, imageDetails)
+//
+//                    imageUri?.let {
+//                        contentResolver.openOutputStream(it)?.use { outputStream ->
+//                            bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+
     override fun onBackPressed() {
+
+        takeScreenshot()
+
+
 
 
         if (myLocationState == 1) {
@@ -1338,11 +1501,61 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         timer1sec.cancel()
         timer10sec.cancel()
 
+        takeScreenshot()
+
         val currentCameraPosition = map.cameraPosition
+
+
+        if ((notATraining / 1000) + (lightTraining / 1000) + (moderateTraining / 1000) + (heavyTraining / 1000) >= 60) {
+
+            val file = File(
+                applicationContext.filesDir,
+                "TrainingRecord"
+            )
+            val fileWriter = FileWriter(file, true)
+
+            val todayDateFormat = SimpleDateFormat(
+                "yyyy-MM-dd",
+                Locale.getDefault()
+            )
+
+
+            val tempUserName =
+                sharedPref.getString("User_Name", "미확인")
+
+            val tempHorseName = intent.getStringExtra("Horse_Name")
+
+
+            val startTimeFormat = SimpleDateFormat(
+                "HH:mm:ss",
+                Locale.getDefault()
+            ).format(startTime as Date).toString()
+
+            fileWriter.append(
+                "${
+                    todayDateFormat.format(
+                        startTime as Date
+                    )
+                }, $startTimeFormat, 조교, $tempUserName, $tempHorseName, ${notATraining / 1000}, ${lightTraining / 1000}, ${moderateTraining / 1000}, ${heavyTraining / 1000}, ${notATraining / 1000 + lightTraining / 1000 + moderateTraining / 1000 + heavyTraining / 1000}\n"
+            )
+
+            fileWriter.flush()
+            fileWriter.close()
+
+
+            finish()
+        }
+
+
+
 
 
         fusedLocationClient.removeLocationUpdates(locationCallback)
 
+//        Log.d("Cameralog", currentCameraPosition.target.latitude.toString())
+//        Log.d("Cameralog", currentCameraPosition.target.longitude.toString())
+//        Log.d("Cameralog", currentCameraPosition.zoom.toString())
+//        Log.d("Cameralog", currentCameraPosition.bearing.toString())
 
         sharedPref.edit()
             .putFloat("User_Latitude", currentCameraPosition.target.latitude.toFloat())
