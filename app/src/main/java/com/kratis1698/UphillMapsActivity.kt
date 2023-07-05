@@ -12,6 +12,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,8 +24,10 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import java.io.BufferedReader
 import java.io.File
-import java.io.FileWriter
+import java.io.FileReader
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -46,18 +49,15 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var focusValue = false
 
-    private lateinit var bottomLayout: LinearLayout
-    private lateinit var bottomTextLabel: TextView
-
     private lateinit var mapOverlayScrollLayout: LinearLayout
-
-    lateinit var currentLocationInfo : MapTrackingService.LocationInfo
-    var locationInfoFullList_binding : MutableList<MapTrackingService.LocationInfo> = mutableListOf<MapTrackingService.LocationInfo>()
-    var latLngList_binding = mutableListOf<LatLng>()
-
 
     private var serviceInstance: MapTrackingService? = null
     private lateinit var serviceConnection: ServiceConnection
+
+    private var lastModifiedTime: Long = 0
+
+
+
 
 
 
@@ -118,26 +118,59 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 
-    private fun mapOverlayInfoText(textMessage: String) {
-        val textView = TextView(this)
-        textView.text = textMessage
-        textView.textSize = 14f
-        textView.setTextColor(Color.GRAY)
-        mapOverlayScrollLayout.addView(textView)
+//    private fun mapOverlayInfoUpdate(textMessage: String) {
+//        val textView = TextView(this)
+//        textView.text = textMessage
+//        textView.textSize = 14f
+//        textView.setTextColor(Color.GRAY)
+//        mapOverlayScrollLayout.addView(textView)
+//
+//        // 텍스트 박스 6줄이 넘어가면 상단부터 삭제하도록
+//        if (mapOverlayScrollLayout.childCount > 6) {
+//            mapOverlayScrollLayout.removeViewAt(0)
+//        }
+//    }
 
-        // 텍스트 박스 6줄이 넘어가면 상단부터 삭제하도록
-        if (mapOverlayScrollLayout.childCount > 6) {
-            mapOverlayScrollLayout.removeViewAt(0)
+
+    private fun readLogsAndUpdateScreen() {
+        val file = File(applicationContext.filesDir, "TrainingRecord")
+
+        if (file.lastModified() == lastModifiedTime) {
+            // 파일이 변경되지 않았으므로 업데이트를 수행할 필요가 없음
+            return
         }
-        val file = File(
-            applicationContext.filesDir,
-            "LogRecord"
-        )
-        val fileWriter = FileWriter(file, true)
-        fileWriter.append(textMessage + "\n")
-        fileWriter.flush()
-        fileWriter.close()
+
+        lastModifiedTime = file.lastModified()
+
+        val logs: MutableList<String> = mutableListOf()
+
+        try {
+            val reader = BufferedReader(FileReader(file))
+            var line: String? = reader.readLine()
+
+            while (line != null) {
+                logs.add(line)
+                line = reader.readLine()
+            }
+
+            reader.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        runOnUiThread {
+            mapOverlayScrollLayout.removeAllViews()
+
+            for (log in logs.takeLast(5)) {
+                val textView = TextView(this)
+                textView.text = log
+                textView.textSize = 14f
+                textView.setTextColor(Color.GRAY)
+                mapOverlayScrollLayout.addView(textView)
+            }
+        }
     }
+
 
 
 
@@ -146,15 +179,16 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map = googleMap
         map.mapType = GoogleMap.MAP_TYPE_NORMAL
 
+        map.uiSettings.isCompassEnabled = true
         map.uiSettings.isZoomControlsEnabled = false
         map.uiSettings.isZoomGesturesEnabled = true
         map.uiSettings.isRotateGesturesEnabled = true
-        map.setMinZoomPreference(15.0f)
+//        map.setMinZoomPreference(15.0f)
 
         val horseNameTextView = findViewById<TextView>(R.id.HorseNameLabel)
 
-        bottomLayout = findViewById(R.id.bottomLayout)
-        bottomTextLabel = findViewById(R.id.bottomTextLabel)
+//        bottomLayout = findViewById(R.id.bottomLayout)
+//        bottomTextLabel = findViewById(R.id.bottomTextLabel)
         
         val mapOverlayTextView = findViewById<TextView>(R.id.MapOverlayTextView)
         mapOverlayScrollLayout = findViewById(R.id.MapOverlayScrollLayout)
@@ -201,6 +235,8 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             map.isMyLocationEnabled = true
 
             val serviceIntent = Intent(this, MapTrackingService::class.java)
+
+            serviceIntent.putExtra("Horse_Name", intent.getStringExtra("Horse_Name")) // 특정 정보를 "key"라는 이름으로 전달
 
             // 포어그라운드 서비스 시작을 위해서는 명시적으로 호출해줘야함, bind에서 자동 생성 명령으로는 포어그라운드 형태로 실행되지 않음
             // 이렇게 해야만 서비스에서 onStartCommand 부분이 실행됨
@@ -253,15 +289,21 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val timerTask1Sec = object : TimerTask() {
             override fun run() {
 
+                readLogsAndUpdateScreen()
+
                 val latLngList = serviceInstance?.latLngList
                 val temp = serviceInstance?.currentlocationInfo
 
 
                 runOnUiThread {
+
+//                    실제 서비스 단계에서는 경로 그리는 기능 삭제(신뢰성 확보)
                     polyline.points = serviceInstance?.latLngList
 
+
+
                     if (focusValue && latLngList!!.isNotEmpty()) {
-                        map.moveCamera(CameraUpdateFactory.newLatLng(latLngList.last()))
+                        map.animateCamera(CameraUpdateFactory.newLatLng(latLngList.last()), 400, null)
                     }
 
                     mapOverlayTextView.text = String.format(
@@ -290,9 +332,33 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
 
+    override fun onBackPressed() {
+        runOnUiThread {
+            val onBackPressedAlertDialog = AlertDialog.Builder(this@UphillMapsActivity)
+                .setMessage(getString(R.string.onBackPressedAlertdialog))
+                .setCancelable(true)
+                .setPositiveButton("OK") { _, _ ->
+                    finish()
+                }
+                .setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+
+            onBackPressedAlertDialog.show()
+        }
+    }
+
+
+
+
+
+
+
+
+
     override fun onPause() {
         super.onPause()
-        Log.d("MY_LOG", "액티비티 중지")
+        Log.d("MY_LOG", "UphillMapsActivity onPause")
 
 //        val serviceIntent = Intent(this, MapTrackingService::class.java)
 //        serviceIntent.action = MapTrackingService.ACTION_FOREGROUND_START
@@ -307,7 +373,8 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onResume() {
         super.onResume()
-        Log.d("MY_LOG", "액티비티 재개")
+        Log.d("MY_LOG", "UphillMapsActivity onResume")
+
 
 //        val serviceIntent = Intent(this, MapTrackingService::class.java)
 //        serviceIntent.action = MapTrackingService.ACTION_FOREGROUND_STOP
@@ -325,6 +392,8 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 // 액티비티가 종료될 때 호출되는 블록
     override fun onDestroy() {
+
+        Log.d("MY_LOG", "UphillMapsActivity onDestroy")
         timer1sec.cancel()
 
         val currentCameraPosition = map.cameraPosition
@@ -335,11 +404,12 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .putFloat("User_Rotation", currentCameraPosition.bearing)
             .apply()
 
-    //서비스와의 바인딩 해제
+    //서비스와의 바인딩 해제 및 서비스 종료
         unbindService(serviceConnection)
 
         val serviceIntent = Intent(this, MapTrackingService::class.java)
         stopService(serviceIntent)
+
 
         super.onDestroy()
     }

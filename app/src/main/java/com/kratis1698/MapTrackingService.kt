@@ -14,6 +14,12 @@ import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import java.io.File
+import java.io.FileWriter
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 class MapTrackingService : Service() {
 
@@ -34,6 +40,9 @@ class MapTrackingService : Service() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private var horseName: String? = null
+    private var startTime: Date? = null
+
     private val locationRequest: LocationRequest = LocationRequest.create().apply {
         interval = 1000 // 위치 업데이트 간격 (밀리초)
         fastestInterval = 500 // 가장 빠른 위치 업데이트 간격 (밀리초)
@@ -50,9 +59,11 @@ class MapTrackingService : Service() {
 
 
 
+
+
+
     inner class MapTrackingBinder : Binder() {
         fun getService(): MapTrackingService = this@MapTrackingService
-
     }
 
 
@@ -64,8 +75,7 @@ class MapTrackingService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-
-        Log.d("MY_LOG", "service started")
+        Log.d("MY_LOG", "Tracking Service onCreate")
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -75,9 +85,7 @@ class MapTrackingService : Service() {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             createLocationCallback()
-
         }
-
     }
 
     private fun createLocationCallback() {
@@ -99,13 +107,91 @@ class MapTrackingService : Service() {
 
 
                     Log.d("MY_LOG", "${latLngList.lastOrNull()}")
+
+
+
+                    // 시점부에 진입시 startTime을 현재시간으로 지속 동기화 함
+                    if (isInStartArea(location.latitude, location.longitude)){
+                        if (startTime == null) {
+                            startTime = Date()
+//                            시점부 진입시에는 startTime을 계속 갱신하게 되며, 하행하여 퇴장할 때도 로그가 남는 단점이 있어서
+//                            실제 출시 시에는 로그를 남기지 않는 것이 좋을 것으로 판단
+                            makingLog("실내언덕주로 시점부 진입")
+
+                        }else{
+                            startTime = Date()
+                        }
+
+                    }
+
+
+
+                    if (startTime != null) {
+                        if (isInFinishArea(location.latitude, location.longitude)){
+                            
+                            //시점부 출발 기록이 있는 상태로, 종점부 도달시 해당 기록 저장
+                            makingLog("주파기록 ${((Date().time - startTime!!.time) / 1000).toInt()}초")
+                            startTime = null
+
+                        }
+
+// 출발한지 300초(5분)이 경과해도 종점부에 도달하지 못 한 경우(훈련을 종료한 경우) startTime 강제 초기화
+                        if (Date().time - startTime!!.time > 300 * 1000) {
+                            startTime = null
+                        }
+
+
+                    }
                 }
             }
         }
     }
 
-    private fun requestLocationUpdates() {
 
+
+    private fun makingLog(text: String) {
+        val currentTime = SimpleDateFormat("M월 d일, HH:mm:ss", Locale.getDefault()).format(Date())
+
+        val file = File(applicationContext.filesDir, "TrainingRecord")
+
+        val fileWriter = FileWriter(file, true)
+        fileWriter.append("$currentTime, $text\n")
+        fileWriter.flush()
+        fileWriter.close()
+    }
+
+
+
+
+    private fun isInStartArea(latitude: Double, longitude: Double): Boolean {
+        val bottomLeft = LatLng(33.4160626, 126.6701271) // 좌측 하단 지점 좌표
+        val topRight = LatLng(33.4167705, 126.6711056) // 우측 상단 지점 좌표
+
+        val targetBounds = LatLngBounds.Builder()
+            .include(bottomLeft)
+            .include(topRight)
+            .build()
+
+        val targetLatLng = LatLng(latitude, longitude)
+        return targetBounds.contains(targetLatLng)
+    }
+
+
+    private fun isInFinishArea(latitude: Double, longitude: Double): Boolean {
+        val bottomLeft = LatLng(33.408618, 126.6689086) // 좌측 하단 지점 좌표
+        val topRight = LatLng(33.409366, 126.6700555) // 우측 상단 지점 좌표
+
+        val targetBounds = LatLngBounds.Builder()
+            .include(bottomLeft)
+            .include(topRight)
+            .build()
+
+        val targetLatLng = LatLng(latitude, longitude)
+        return targetBounds.contains(targetLatLng)
+    }
+
+
+    private fun requestLocationUpdates() {
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -117,7 +203,6 @@ class MapTrackingService : Service() {
                 Looper.getMainLooper()
             )
         }
-
     }
 
 
@@ -136,14 +221,15 @@ class MapTrackingService : Service() {
             notificationManager.createNotificationChannel(channel)
         }
 
-        startForeground(NOTIFICATION_ID, createNotification())
-        Log.d("MY_LOG", "convert to foreground")
+        horseName = intent?.getStringExtra("Horse_Name")
+        makingLog("$horseName 트래킹 시작")
 
+        startForeground(NOTIFICATION_ID, createNotification())
+//        Log.d("MY_LOG", "convert to foreground")
         requestLocationUpdates()
 
         return START_STICKY
     }
-
 
 
 
@@ -163,11 +249,11 @@ class MapTrackingService : Service() {
 
 
 
-
     override fun onDestroy() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
         super.onDestroy()
-        Log.d("MY_LOG", "service terminated")
+        Log.d("MY_LOG", "Tracking Service onDestroy")
+        makingLog("$horseName 트래킹 종료")
     }
 
 

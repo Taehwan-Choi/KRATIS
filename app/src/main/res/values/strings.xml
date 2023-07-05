@@ -49,5 +49,6 @@ Copyright 한국마사회 최태환
     <string name="DonotDisturbAlarm">안드로이드 방해 금지 모드를 활성화 해 주시기 바랍니다</string>
     <string name="logCheck">로그 파일 확인</string>
     <string name="uphill_tracking_button">실내언덕주로 트래킹</string>
+    <string name="onBackPressedAlertdialog">트래킹 기능이 작동 중 입니다, 정말로 트래킹 기능을 종료 하시겠습니까?</string>
 
 </resources>
