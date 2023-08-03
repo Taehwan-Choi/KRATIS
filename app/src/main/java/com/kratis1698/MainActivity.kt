@@ -14,18 +14,15 @@ import androidx.core.content.ContextCompat
 import java.io.File
 
 class MainActivity : AppCompatActivity() {
-
-
     // UI elements
-    private lateinit var trackingButton: Button
+    private lateinit var topLayOutText: TextView
+
     private lateinit var uphillTrackingButton: Button
     private lateinit var recordButton: Button
-    private lateinit var horseCheckButton: Button
     private lateinit var userButton: Button
-    private lateinit var helpButton: Button
     private lateinit var exitButton: Button
-    private lateinit var topLayOutText: TextView
-    private lateinit var versionUpdateInfoText: TextView
+
+
 
     // Other elements
     private lateinit var sharedPref: SharedPreferences
@@ -36,7 +33,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initUI()
-
         updateUI()
 
         setOnClickListeners()
@@ -44,15 +40,16 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initUI() {
-        trackingButton = findViewById(R.id.tracking_button)
+
+        topLayOutText = findViewById<TextView>(R.id.Top_layout_Text)
+
+
         uphillTrackingButton = findViewById(R.id.uphill_tracking_button)
         recordButton = findViewById(R.id.record_button)
-        horseCheckButton = findViewById(R.id.horse_check_button)
+
         userButton = findViewById(R.id.user_button)
-        helpButton = findViewById(R.id.help_button)
         exitButton = findViewById(R.id.exit_button)
-        topLayOutText = findViewById<TextView>(R.id.Top_layout_Text)
-        versionUpdateInfoText = findViewById<TextView>(R.id.VersionUpdateInfoText)
+
 
         sharedPref = getSharedPreferences("Shared_Preferences", Context.MODE_PRIVATE)
     }
@@ -69,10 +66,6 @@ class MainActivity : AppCompatActivity() {
 
         userDiv?.let { tempUserDiv ->
             when (tempUserDiv) {
-                "서울 경마장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
-                                                                                    R.color.blue))
-                "부경 경마장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
-                                                                                    R.color.green))
                 "제주 목장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
                                                                                    R.color.red))
                 "장수 목장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
@@ -80,12 +73,6 @@ class MainActivity : AppCompatActivity() {
                 else -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.grey))
             }
         }
-
-
-        ///임시로 미사용 버튼 모두 비활성화
-        trackingButton.visibility = View.GONE
-        horseCheckButton.visibility = View.GONE
-        helpButton.visibility = View.GONE
 
 
 
@@ -103,29 +90,15 @@ class MainActivity : AppCompatActivity() {
             uphillTrackingButton.visibility = View.GONE
         }
 
-
-
     }
 
     private fun setOnClickListeners() {
-
-
-//        trackingButton.setOnClickListener {
-//
-//            if (userDiv != null) {
-//                val intent = Intent(this, HorseSelectionActivity::class.java)
-//                intent.putExtra("Tracking_Type", "Training")
-//                startActivity(intent)
-//            }
-//        }
-
 
 
         uphillTrackingButton.setOnClickListener {
 
             if (userDiv != null) {
                 val intent = Intent(this, HorseSelectionActivity::class.java)
-                intent.putExtra("Tracking_Type", "Uphill_Training")
                 startActivity(intent)
             }
         }
@@ -137,12 +110,7 @@ class MainActivity : AppCompatActivity() {
                 val intent =
                     Intent(Intent.ACTION_VIEW, Uri.parse("https://www.horsepia.com/hp/pa/pp/PAPP3030/viewPop.do"))
                 startActivity(intent)
-
-//                val intent =
-//                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.horsepia.com/hp/pa/pp/PAPP3031/index.do"))
-//                startActivity(intent)
             }
-
             if (userDiv == "장수 목장") {
                 val intent =
                     Intent(Intent.ACTION_VIEW, Uri.parse("https://www.horsepia.com/hp/pa/pp/PAPP3020/viewPop.do"))
@@ -150,12 +118,6 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-
-
-//        horseCheckButton.setOnClickListener {
-//            val intent = Intent(this, HorseCheckActivity::class.java)
-//            startActivity(intent)
-//        }
 
 
 
@@ -167,18 +129,10 @@ class MainActivity : AppCompatActivity() {
 
 
 
-//        helpButton.setOnClickListener {
-//            val intent = Intent(this, HelpActivity::class.java)
-//            startActivity(intent)
-//        }
-
 
         exitButton.setOnClickListener {
             showExitConfirmationDialog()
         }
-
-
-
 
     }
 

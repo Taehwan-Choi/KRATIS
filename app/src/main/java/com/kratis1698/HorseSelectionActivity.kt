@@ -16,14 +16,12 @@ class HorseSelectionActivity : AppCompatActivity() {
         setContentView(R.layout.activity_horse_selection)
 
         val sharedPref = getSharedPreferences(
-            "KRAIS_Preferences", Context.MODE_PRIVATE
+            "Shared_Preferences", Context.MODE_PRIVATE
         )
 
         val tempUserPk = sharedPref.getString("User_PK", null)
         val buttonLayout = findViewById<LinearLayout>(R.id.button_layout)
         val inputStream = File(getExternalFilesDir(null), "horse.csv")
-
-        val trackingType = intent.getStringExtra("Tracking_Type")
 
 
         data class Horse(val first: String, val second: String)
@@ -41,20 +39,6 @@ class HorseSelectionActivity : AppCompatActivity() {
         }
 
 
-//        val horseListUpdateTimeText = findViewById<TextView>(R.id.horseListUpdateTime)
-//
-//
-//        runOnUiThread {
-//            horseListUpdateTimeText.text = SimpleDateFormat("리스트 업데이트 : yyyy-MM-dd / HH:mm:ss", Locale.getDefault()).format(
-//                Date()
-//            )
-//        }
-
-
-
-
-
-
 
         for (horse in horses) {
             val button = Button(this)
@@ -65,36 +49,18 @@ class HorseSelectionActivity : AppCompatActivity() {
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
 
 
-
             button.setOnClickListener {
+                val intent = Intent(this, UphillMapsActivity::class.java)
 
-                when (trackingType) {
-                    "Training" -> {
-                        val intent = Intent(this, MapsActivity::class.java)
+                val editor = sharedPref.edit()
+                editor.putString("Horse_PK", horse.first)
+                editor.putString("Horse_Name", horse.second)
+                editor.apply()
 
-                        val sharedPref = getSharedPreferences("KRAIS_Preferences", Context.MODE_PRIVATE)
-                        val editor = sharedPref.edit()
-                        editor.putString("Horse_PK", horse.first)
-                        editor.putString("Horse_Name", horse.second)
-                        editor.apply()
-
-                        startActivity(intent)
-                    }
-                    "Uphill_Training" -> {
-                        val intent = Intent(this, UphillMapsActivity::class.java)
-
-                        val sharedPref = getSharedPreferences("KRAIS_Preferences", Context.MODE_PRIVATE)
-                        val editor = sharedPref.edit()
-                        editor.putString("Horse_PK", horse.first)
-                        editor.putString("Horse_Name", horse.second)
-                        editor.apply()
-
-                        startActivity(intent)
-                    }
-                }
-
-
+                startActivity(intent)
             }
+
+
             buttonLayout.addView(button)
         }
 

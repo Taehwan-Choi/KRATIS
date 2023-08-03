@@ -12,7 +12,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.provider.MediaStore
-import android.util.Log
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.LinearLayout
@@ -113,19 +112,20 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun readLogsAndUpdateScreen() {
-        val file = File(applicationContext.filesDir, "TrainingRecord")
+        var csvFileName = "TrainingRecord.csv"
+        val csvFile = File(getExternalFilesDir(null), csvFileName)
 
-        if (file.lastModified() == lastModifiedTime) {
+        if (csvFile.lastModified() == lastModifiedTime) {
             // 파일이 변경되지 않았으므로 업데이트를 수행할 필요가 없음
             return
         }
 
-        lastModifiedTime = file.lastModified()
+        lastModifiedTime = csvFile.lastModified()
 
         val logs: MutableList<String> = mutableListOf()
 
         try {
-            val reader = BufferedReader(FileReader(file))
+            val reader = BufferedReader(FileReader(csvFile))
             var line: String? = reader.readLine()
 
             while (line != null) {
@@ -170,7 +170,7 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         map.uiSettings.isZoomControlsEnabled = false
         map.uiSettings.isZoomGesturesEnabled = true
         map.uiSettings.isRotateGesturesEnabled = true
-//        map.setMinZoomPreference(15.0f)
+
 
         val horseNameTextView = findViewById<TextView>(R.id.HorseNameLabel)
 
@@ -450,20 +450,17 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onPause() {
         super.onPause()
-        Log.d("MY_LOG", "UphillMapsActivity onPause")
     }
 
 
     override fun onResume() {
         super.onResume()
-        Log.d("MY_LOG", "UphillMapsActivity onResume")
     }
 
 
 // 액티비티가 종료될 때 호출되는 블록
     override fun onDestroy() {
 
-        Log.d("MY_LOG", "UphillMapsActivity onDestroy")
         timer1sec.cancel()
 
         val currentCameraPosition = map.cameraPosition

@@ -41,27 +41,6 @@
     </LinearLayout>
 
 
-
-<!--    <LinearLayout-->
-<!--        android:id="@+id/bottomLayout"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:orientation="horizontal"-->
-<!--        android:layout_alignParentBottom="true">-->
-
-<!--        <TextView-->
-<!--            android:id="@+id/bottomTextLabel"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:gravity="center"-->
-<!--            android:text="@string/bottomText"-->
-<!--            android:textSize="20sp"-->
-<!--            android:background="@color/grey"-->
-<!--            android:layout_weight="1"/>-->
-
-<!--    </LinearLayout>-->
-
-
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"

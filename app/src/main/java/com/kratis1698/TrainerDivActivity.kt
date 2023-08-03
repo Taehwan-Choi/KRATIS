@@ -3,7 +3,6 @@ package com.kratis1698
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,8 +12,6 @@ class TrainerDivActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_trainer_div)
 
-        val seoulRacButton = findViewById<Button>(R.id.seoul_race)
-        val busanRaceButton = findViewById<Button>(R.id.busan_race)
         val jejuFarmButton = findViewById<Button>(R.id.jeju_farm)
         val jangsuFarmButton = findViewById<Button>(R.id.jangsu_farm)
         val unregisteredButton = findViewById<Button>(R.id.unregistered)
@@ -24,31 +21,12 @@ class TrainerDivActivity : AppCompatActivity() {
 
 
 
-        // 언덕주로용 어플이므로 일단 서울 부산을 표시하지 않음
-        seoulRacButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.blue)
-        busanRaceButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.green)
-        seoulRacButton.visibility = View.GONE
-        busanRaceButton.visibility = View.GONE
-
-
         jejuFarmButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.red)
         jangsuFarmButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.purple)
         unregisteredButton.backgroundTintList = ContextCompat.getColorStateList(this, R.color.grey)
 
 
 
-//        seoulRacButton.setOnClickListener {
-//            val intent = Intent(this, TrainerSelectionActivity::class.java)
-//            intent.putExtra("User_Div", "서울 경마장")
-//            startActivity(intent)
-//        }
-//
-//
-//        busanRaceButton.setOnClickListener {
-//            val intent = Intent(this, TrainerSelectionActivity::class.java)
-//            intent.putExtra("User_Div", "부경 경마장")
-//            startActivity(intent)
-//        }
 
         jejuFarmButton.setOnClickListener {
             val intent = Intent(this, TrainerSelectionActivity::class.java)

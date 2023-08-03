@@ -13,6 +13,8 @@
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
 
 
     <application
@@ -33,9 +35,7 @@
         <activity
             android:name=".UphillMapsActivity"
             android:exported="false" />
-        <activity
-            android:name=".LogCheckActivity"
-            android:exported="false" />
+
 
         <service
             android:name=".MapTrackingService"
@@ -55,18 +55,7 @@
         </activity>
 
 
-        <activity
-            android:name=".LocalRecordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".TrainingReferenceActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HorseInformationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HorseCheckActivity"
-            android:exported="false" />
+
         <activity
             android:name=".HorseSelectionActivity"
             android:exported="false" />
@@ -88,12 +77,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".MapsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HelpActivity"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
