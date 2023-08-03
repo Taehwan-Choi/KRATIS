@@ -7,6 +7,8 @@ import android.util.TypedValue
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import java.io.File
+
 
 class HorseSelectionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,9 +21,25 @@ class HorseSelectionActivity : AppCompatActivity() {
 
         val tempUserPk = sharedPref.getString("User_PK", null)
         val buttonLayout = findViewById<LinearLayout>(R.id.button_layout)
-        val inputStream = resources.openRawResource(R.raw.kra_horses)
-        val horses = mutableListOf<Triple<String, String, String>>()
+        val inputStream = File(getExternalFilesDir(null), "horse.csv")
+
         val trackingType = intent.getStringExtra("Tracking_Type")
+
+
+        data class Horse(val first: String, val second: String)
+
+        val horses = mutableListOf<Horse>()
+
+        inputStream.reader(Charsets.UTF_8).buffered().useLines { lines ->
+            lines.drop(1).forEach {
+                val row = it.split(",")
+                if (row[0] == tempUserPk) {
+                    val horse = Horse(row[1], row[2])
+                    horses.add(horse)
+                }
+            }
+        }
+
 
 //        val horseListUpdateTimeText = findViewById<TextView>(R.id.horseListUpdateTime)
 //
@@ -35,26 +53,13 @@ class HorseSelectionActivity : AppCompatActivity() {
 
 
 
-        inputStream.reader(Charsets.UTF_8).buffered().useLines { lines ->
-            lines.drop(1).forEach {
-                val row = it.split(",")
-                if (row[0] == tempUserPk) {
-                    horses.add(Triple(row[1], row[2], row[3]))
-                    //                    0은 trainer PK, 1은 Horse PK, 2는 Horse Name, 3은 Horse BY 순서
-                }
-            }
-        }
 
 
 
         for (horse in horses) {
             val button = Button(this)
 
-            if (horse.second.endsWith("자마")) {
-                button.text = String.format("%s / %s ('%s)", horse.first, horse.second, horse.third.takeLast(2))
-            } else {
-                button.text = String.format("%s / %s", horse.first, horse.second)
-            }
+            button.text = String.format("%s(%s)", horse.second, horse.first)
 
 
             button.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f)
@@ -66,16 +71,24 @@ class HorseSelectionActivity : AppCompatActivity() {
                 when (trackingType) {
                     "Training" -> {
                         val intent = Intent(this, MapsActivity::class.java)
-                        intent.putExtra("Horse_PK", horse.first)
-                        intent.putExtra("Horse_Name",  horse.second)
-                        intent.putExtra("Horse_BY", horse.third)
+
+                        val sharedPref = getSharedPreferences("KRAIS_Preferences", Context.MODE_PRIVATE)
+                        val editor = sharedPref.edit()
+                        editor.putString("Horse_PK", horse.first)
+                        editor.putString("Horse_Name", horse.second)
+                        editor.apply()
+
                         startActivity(intent)
                     }
                     "Uphill_Training" -> {
                         val intent = Intent(this, UphillMapsActivity::class.java)
-                        intent.putExtra("Horse_PK", horse.first)
-                        intent.putExtra("Horse_Name",  horse.second)
-                        intent.putExtra("Horse_BY", horse.third)
+
+                        val sharedPref = getSharedPreferences("KRAIS_Preferences", Context.MODE_PRIVATE)
+                        val editor = sharedPref.edit()
+                        editor.putString("Horse_PK", horse.first)
+                        editor.putString("Horse_Name", horse.second)
+                        editor.apply()
+
                         startActivity(intent)
                     }
                 }

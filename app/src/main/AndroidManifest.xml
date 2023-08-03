@@ -9,8 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
 
     <application
@@ -20,8 +22,12 @@
         android:icon="@mipmap/horse_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
+
+        android:usesCleartextTraffic="true"
+
         android:theme="@style/Theme.ChoiAndroidFirstWork.NoActionBar"
-        tools:targetApi="31">
+        tools:targetApi="28">
+<!--        API레벨 28이상이면, 안드로이드9 이상을 지원 하여 전체 유저의 95% 이상이 사용 가능할 것으로 판단-->
 
 
         <activity
@@ -36,7 +42,18 @@
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="location"
-            android:permission="android.permission.ACCESS_FINE_LOCATION"/>
+            android:permission="android.permission.ACCESS_FINE_LOCATION"
+            />
+
+        <activity
+            android:name=".IntroActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
 
         <activity
             android:name=".LocalRecordActivity"
@@ -59,20 +76,14 @@
         <activity
             android:name=".TrainerDivActivity"
             android:exported="false" />
-        <!--
-             TODO: Before you run your application, you need a Google Maps API key.
 
-             To get one, follow the directions here:
 
-                https://developers.google.com/maps/documentation/android-sdk/get-api-key
-
-             Once you have your API key (it starts with "AIza"), define a new property in your
-             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
-             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
-        -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAQyIQQkyk8iZtlmxAvoqcV8E1bXInda5g" />
+
+
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -86,11 +97,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
     </application>
 

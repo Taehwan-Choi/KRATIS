@@ -2,78 +2,97 @@ package com.kratis1698
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.File
 
 class MainActivity : AppCompatActivity() {
 
 
-    companion object {
-        private const val APPLICATION_VERSION = "1.0"
-    }
+    // UI elements
+    private lateinit var trackingButton: Button
+    private lateinit var uphillTrackingButton: Button
+    private lateinit var recordButton: Button
+    private lateinit var horseCheckButton: Button
+    private lateinit var userButton: Button
+    private lateinit var helpButton: Button
+    private lateinit var exitButton: Button
+    private lateinit var topLayOutText: TextView
+    private lateinit var versionUpdateInfoText: TextView
 
-
-
-//    전화 번호 가져오기 코드의 경우, 현제 getLine1Number 가 지원 종료되었고(API 33부터)
-//    getNumber / getPhoneNumber 가 사용되므로 구현하기가 까다로운 상황
-
+    // Other elements
+    private lateinit var sharedPref: SharedPreferences
+    private var userDiv: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        initUI()
+
+        updateUI()
+
+        setOnClickListeners()
+    }
 
 
+    private fun initUI() {
+        trackingButton = findViewById(R.id.tracking_button)
+        uphillTrackingButton = findViewById(R.id.uphill_tracking_button)
+        recordButton = findViewById(R.id.record_button)
+        horseCheckButton = findViewById(R.id.horse_check_button)
+        userButton = findViewById(R.id.user_button)
+        helpButton = findViewById(R.id.help_button)
+        exitButton = findViewById(R.id.exit_button)
+        topLayOutText = findViewById<TextView>(R.id.Top_layout_Text)
+        versionUpdateInfoText = findViewById<TextView>(R.id.VersionUpdateInfoText)
 
+        sharedPref = getSharedPreferences("Shared_Preferences", Context.MODE_PRIVATE)
+    }
 
+    private fun updateUI() {
 
-        val trackingButton = findViewById<Button>(R.id.tracking_button)
-        val uphillTrackingButton = findViewById<Button>(R.id.uphill_tracking_button)
-        val recordButton = findViewById<Button>(R.id.record_button)
-        val horseCheckButton = findViewById<Button>(R.id.horse_check_button)
-        val userButton = findViewById<Button>(R.id.user_button)
-        val helpButton = findViewById<Button>(R.id.help_button)
-        val exitButton = findViewById<Button>(R.id.exit_button)
+        userDiv = sharedPref.getString("User_Div", null)
 
-
-
-
-        val topLayOutText = findViewById<TextView>(R.id.Top_layout_Text)
-
-        val versionUpdateInfoText = findViewById<TextView>(R.id.VersionUpdateInfoText)
-
-
-        val sharedPref = getSharedPreferences(
-            "KRAIS_Preferences", Context.MODE_PRIVATE)
-
-        val topLayoutTextString = sharedPref.getString("User_Div", "") + " " + sharedPref.getString("User_Num", "미등록 사용자")+ " " + sharedPref.getString("User_Name", "")
+        val topLayoutTextString = sharedPref.getString("User_Div", "") + " " + sharedPref.getString(
+            "User_Num",
+            "미등록 사용자") + " " + sharedPref.getString("User_Name", "")
         topLayOutText.text = topLayoutTextString
 
 
-        runOnUiThread {
-            versionUpdateInfoText.text = "Version : " + APPLICATION_VERSION + "  /  " + SimpleDateFormat("입사마 업데이트 : MM-dd HH:mm", Locale.getDefault()).format(
-                Date()
-            )
+        userDiv?.let { tempUserDiv ->
+            when (tempUserDiv) {
+                "서울 경마장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
+                                                                                    R.color.blue))
+                "부경 경마장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
+                                                                                    R.color.green))
+                "제주 목장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
+                                                                                   R.color.red))
+                "장수 목장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this,
+                                                                                   R.color.purple))
+                else -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.grey))
+            }
         }
 
-        val userDiv = sharedPref.getString("User_Div", null)
+
+        ///임시로 미사용 버튼 모두 비활성화
+        trackingButton.visibility = View.GONE
+        horseCheckButton.visibility = View.GONE
+        helpButton.visibility = View.GONE
+
 
 
         if (userDiv == null) {
-            trackingButton.visibility = View.GONE
             recordButton.visibility = View.GONE
-            horseCheckButton.visibility = View.GONE
         } else {
-            trackingButton.visibility = View.VISIBLE
             recordButton.visibility = View.VISIBLE
-            horseCheckButton.visibility = View.VISIBLE
         }
 
 
@@ -86,27 +105,19 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    }
 
-        userDiv?.let { tempUserDiv ->
-            when (tempUserDiv) {
-                "서울 경마장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.blue))
-                "부경 경마장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.green))
-                "제주 목장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
-                "장수 목장" -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.purple))
-                else -> topLayOutText.setBackgroundColor(ContextCompat.getColor(this, R.color.grey))
-            }
-        }
+    private fun setOnClickListeners() {
 
 
-
-        trackingButton.setOnClickListener {
-
-            if (userDiv != null) {
-                val intent = Intent(this, HorseSelectionActivity::class.java)
-                intent.putExtra("Tracking_Type", "Training")
-                startActivity(intent)
-            }
-        }
+//        trackingButton.setOnClickListener {
+//
+//            if (userDiv != null) {
+//                val intent = Intent(this, HorseSelectionActivity::class.java)
+//                intent.putExtra("Tracking_Type", "Training")
+//                startActivity(intent)
+//            }
+//        }
 
 
 
@@ -120,43 +131,97 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-
-
         recordButton.setOnClickListener {
-            val intent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://studbook.kra.co.kr/studbook.jsp"))
-            startActivity(intent)
+
+            if (userDiv == "제주 목장") {
+                val intent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.horsepia.com/hp/pa/pp/PAPP3030/viewPop.do"))
+                startActivity(intent)
+
+//                val intent =
+//                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.horsepia.com/hp/pa/pp/PAPP3031/index.do"))
+//                startActivity(intent)
+            }
+
+            if (userDiv == "장수 목장") {
+                val intent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.horsepia.com/hp/pa/pp/PAPP3020/viewPop.do"))
+                startActivity(intent)
+            }
+
         }
 
 
-
-        horseCheckButton.setOnClickListener {
-            val intent = Intent(this, HorseCheckActivity::class.java)
-            startActivity(intent)
-        }
+//        horseCheckButton.setOnClickListener {
+//            val intent = Intent(this, HorseCheckActivity::class.java)
+//            startActivity(intent)
+//        }
 
 
 
         userButton.setOnClickListener {
             val intent = Intent(this, TrainerDivActivity::class.java)
             startActivity(intent)
-        }
-
-
-
-        helpButton.setOnClickListener {
-            val intent = Intent(this, HelpActivity::class.java)
-            startActivity(intent)
-        }
-
-
-        exitButton.setOnClickListener {
             finish()
         }
 
 
+
+//        helpButton.setOnClickListener {
+//            val intent = Intent(this, HelpActivity::class.java)
+//            startActivity(intent)
+//        }
+
+
+        exitButton.setOnClickListener {
+            showExitConfirmationDialog()
+        }
+
+
+
+
     }
 
+    override fun onResume() {
+        super.onResume()
+        updateUI()
+    }
+
+
+    override fun onBackPressed() {
+        showExitConfirmationDialog()
+    }
+
+
+
+
+    private fun showExitConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("정말로 종료 하시겠습니까?")
+        builder.setPositiveButton("종료") { _, _ ->
+            deleteCSVFiles()
+        }
+        builder.setNegativeButton("취소") { _, _ ->
+        }
+        val dialog = builder.create()
+        dialog.show()
+    }
+
+
+    private fun deleteCSVFiles() {
+        val csvFileName = "horse.csv"
+        val csvFileName2 = "trainer.csv"
+        val csvFile = File(getExternalFilesDir(null), csvFileName)
+        val csvFile2 = File(getExternalFilesDir(null), csvFileName2)
+        val isDeleted = csvFile.delete()
+        val isDeleted2 = csvFile2.delete()
+
+        if (isDeleted && isDeleted2) {
+            finish()
+        } else {
+            finish()
+        }
+    }
 
 
 
