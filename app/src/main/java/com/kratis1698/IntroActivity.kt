@@ -20,7 +20,6 @@ import java.io.File
 data class MyItem(val pcndId: String, val rccrsCd: String, val beloNo: String, val pcndNm:String )
 data class MyItem2(val barnGbCd: Int, val hrnm: String, val hrno: String, val pcndId: String)
 data class MyItem3(val barnGbCd: Int, val hrnm: String, val hrno: String, val pcndId: String,val pcndId2: String, val rccrsCd: String, val beloNo: String, val pcndNm:String)
-data class MyItem4(val barnGbCd: String, val hrnm: String, val hrno: String, val pcndId: String,val pcndId2: String, val rccrsCd: String, val beloNo: String, val pcndNm:String)
 
 /*
 * 2023 6.23
@@ -153,7 +152,7 @@ class IntroActivity :  AppCompatActivity() {
             "${item.pcndId},${item.rccrsCd},${item.beloNo},${item.pcndNm}"
         }
 
-        var csvFileName = "trainer.csv"
+        val csvFileName = "trainer.csv"
 
         val csvFile = File(getExternalFilesDir(null), csvFileName)
         csvFile.writeText(csvData)

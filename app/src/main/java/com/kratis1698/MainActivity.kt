@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var exitButton: Button
 
 
-
     // Other elements
     private lateinit var sharedPref: SharedPreferences
     private var userDiv: String? = null
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUI() {
 
-        topLayOutText = findViewById<TextView>(R.id.Top_layout_Text)
+        topLayOutText = findViewById(R.id.Top_layout_Text)
 
 
         uphillTrackingButton = findViewById(R.id.uphill_tracking_button)
@@ -176,8 +175,5 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
     }
-
-
-
 
 }

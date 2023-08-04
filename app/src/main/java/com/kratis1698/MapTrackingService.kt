@@ -91,7 +91,7 @@ class MapTrackingService : Service() {
 //        File(applicationContext.filesDir, "TrainingRecord").delete()
 
 
-        val sharedPref = getSharedPreferences("KRAIS_Preferences", Context.MODE_PRIVATE)
+        val sharedPref = getSharedPreferences("Shared_Preferences", Context.MODE_PRIVATE)
 
         tempHorsePK = sharedPref.getString("Horse_PK", null)
         tempHorseName = sharedPref.getString("Horse_Name", null)

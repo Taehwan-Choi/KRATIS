@@ -27,7 +27,7 @@
         <TextView
             android:id="@+id/Top_layout_Text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:gravity="center"
             android:text="@string/Unregistered_user"
             android:background="#808080"

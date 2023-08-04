@@ -112,7 +112,7 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
     private fun readLogsAndUpdateScreen() {
-        var csvFileName = "TrainingRecord.csv"
+        val csvFileName = "TrainingRecord.csv"
         val csvFile = File(getExternalFilesDir(null), csvFileName)
 
         if (csvFile.lastModified() == lastModifiedTime) {
@@ -431,8 +431,6 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         takeScreenshot()
                     }
 
-//                    takeScreenshot()
-
                     finish()
                 }
                 .setNegativeButton("Cancel") { dialog, _ ->
@@ -445,17 +443,6 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 
-
-
-
-    override fun onPause() {
-        super.onPause()
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-    }
 
 
 // 액티비티가 종료될 때 호출되는 블록

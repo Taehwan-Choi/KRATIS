@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">마사회 조교정보</string>
+    <string name="app_name">실내언덕주로 트래킹</string>
     <string name="tracking_button">마필 조교 트래킹</string>
     <string name="record_button">호스피아 기록 확인</string>
     <string name="user_button">사용자 등록</string>
