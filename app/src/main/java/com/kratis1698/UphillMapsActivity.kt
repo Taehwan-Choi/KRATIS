@@ -85,7 +85,7 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
         )
 
 
-        focusValue = sharedPref.getBoolean("Tracking_Focus", false)
+        focusValue = sharedPref.getBoolean("Tracking_Focus", true)
 
         tempHorsePK = sharedPref.getString("Horse_PK", "")
         tempHorseName = sharedPref.getString("Horse_Name", "")
@@ -162,7 +162,7 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
         map.setMaxZoomPreference(17.0f)
-        map.setMinZoomPreference(12.0f)
+//        map.setMinZoomPreference(12.0f)
 
 
 
@@ -269,6 +269,9 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             // 위치 권한이 거부된 상태이므로 권한 요청 대화상자를 표시
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION
             )
+
+            finish()
+
         }
         
 
@@ -291,37 +294,35 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val latLngList = serviceInstance?.latLngList
                 val temp = serviceInstance?.currentlocationInfo
 
-
                 runOnUiThread {
 //                    실제 서비스 단계에서는 경로 그리는 기능 삭제// 최근 10개 위치만 그리는 기능
-                    polyline.points = latLngList!!.takeLast(10)
 
+                    polyline.points = latLngList!!.takeLast(10)
 
 
                     if (focusValue && latLngList!!.isNotEmpty()) {
                         map.animateCamera(CameraUpdateFactory.newLatLng(latLngList.last()), 200, null)
                     }
 
-                    mapOverlayTextView.text = String.format(
-                        "시 간 : %s\n" +
-                                "위 도 : %s\n" +
-                                "경 도 : %s\n" +
-                                "고 도 : %s m\n" +
-                                "오 차 : %s m\n" +
-                                "속 도 : %s km/h\n" +
-                                "방 향 : %s ",
-                        SimpleDateFormat(
-                            "HH:mm:ss",
-                            Locale.getDefault()
-                        ).format(Date(temp!!.time)),
-                        temp!!.latitude,
-                        temp!!.longitude,
-                        temp!!.altitude,
-                        temp!!.accuracy,
-                        temp!!.speed,
-                        temp!!.bearing
-                    )
+                    mapOverlayTextView.text = """
+                        측정시간 : ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(temp!!.time))}
+                        오차범위 : ${temp!!.accuracy} m
+                        이동속도 : ${temp!!.speed} km/h""".trimIndent()
+
+//                    mapOverlayTextView.text = """
+//                        시 간 : ${SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(Date(temp!!.time))}
+//                        위 도 : ${temp!!.latitude}
+//                        경 도 : ${temp!!.longitude}
+//                        고 도 : ${temp!!.altitude} m
+//                        오 차 : ${temp!!.accuracy} m
+//                        속 도 : ${temp!!.speed} km/h
+//                        방 향 : ${temp!!.bearing}""".trimIndent()
+
+
                 }
+
+
+
             }
         }
         timer1sec.schedule(timerTask1Sec, 5000L, 1000L)
@@ -359,6 +360,9 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private var savedCameraPosition: CameraPosition? = null
+
+
+
     private fun takeScreenshot() {
         savedCameraPosition = map.cameraPosition
 
@@ -427,9 +431,9 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .setCancelable(true)
                 .setPositiveButton("OK") { _, _ ->
 
-                    if (serviceInstance?.statusTrained == true) {
-                        takeScreenshot()
-                    }
+//                    if (serviceInstance?.statusTrained == true) {
+//                        takeScreenshot()
+//                    }
 
                     finish()
                 }
@@ -458,10 +462,12 @@ class UphillMapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .putFloat("User_Rotation", currentCameraPosition.bearing)
             .apply()
 
+        //서비스와의 바인딩 해제 및 서비스 종료
+        if (::serviceConnection.isInitialized) {
+            unbindService(serviceConnection)
+            stopService(serviceIntent)
+        }
 
-    //서비스와의 바인딩 해제 및 서비스 종료
-        unbindService(serviceConnection)
-        stopService(serviceIntent)
 
         super.onDestroy()
     }
