@@ -18,8 +18,6 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import java.io.File
-import java.io.FileWriter
-import java.lang.Math.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -285,6 +283,8 @@ class MapTrackingService : Service() {
                 .build()
 
         val notificationManager = NotificationManagerCompat.from(this)
+
+
         notificationManager.notify(NOTIFICATION_ID, notification)
 
         if (notification != null) {
